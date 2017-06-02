@@ -7,7 +7,7 @@ program rate
 implicit real*8 (a-h,o-z)
 
 real*8 ::  expo, zpointr,zpoints,zpointts, den,Er,Ep,Ets,gapd,gapi
-integer :: nmodesr, nmodesp , nmodetst, tini, tfin
+integer :: nmodesr, nmodesp , nmodetst, tini, tfin,pointer,crossd,crossi
 real*8, parameter :: kboltz=1.38064D-23 , planck=6.626070D-34 , pi=3.14159265359, c= 2.99792418D10 ,avo=6.023D23
 real*8, parameter :: R=8.314472D-3
 real*8, parameter :: eheV=27. , ehkcal=627.5 , cmhz=2.99793D10
@@ -128,17 +128,24 @@ write(8,*) 'BARRERA INVERSA(KCAL/MOL)' , gapi*ehkcal
 
 if (gapd*10 < gapi) then 
 	write(8,*) 'LA REACCION NO ES UN EQUILIBRIO'
+	pointer = 2
 	else
 	write(8,*) 'CUIDADO! LA REACCION PUEDE SER UN EQUILIBRIO'
+	pointer = 1
 end if
+
 write(8,*) '+++++++++++++++++NO TUNNELING RATE CONSTANTS++++++++++'
 
 !CALCULATION OF ENERGETIC TERM
 
 do i=Tini,Tfin, 5
+	if (pointer.NE.1) then
 	ktst(i)=((kboltz*i)/planck)*(Qts(i)/(Qreac(i)))*dexp(-(gapd*2600)/(R*i))
+	write(8,*) 'Temperature' , i ,'DIRECT' , ktst(i)
+	else
 	ktsti(i)=((kboltz*i)/planck)*(Qts(i)/(Qprod(i)))*dexp(-(gapi*2600)/(R*i))
 	write(8,*) 'Temperature' , i ,'DIRECT' , ktst(i), 'INVERSE' , ktsti(i)
+	end if
 end do
 	
 
@@ -148,20 +155,58 @@ write(8,*) '++++++++++++++++++++++++++++++++++++++++++++++++++++'
 !HASTA AQUI FUNCIONA BIEN
 !TUNNELING CORRECTIONS, SEE ABOVEMENTIONED PAPER
 
+!CALCULATION OF CROSSOVER TEMPERATURE
+
+write(8,*) '+++++++++++++++CROSSOVER TEMPERATURES+++++++++++++++++'
+if (pointer.ne.1) then
+	crossd= INT((planck*dabs(vibmodetst(1))*cmhz*gapd*(2600/avo)*1000*(1/kboltz)) / &
+		((2*pi*gapd*(2600/avo)*1000)-(planck*dabs(vibmodetst(1))*cmhz*DLOG(2.d0))))
+	write (8,*) ' CROSSOVER TEMPERATURE IN K' , crossd
+	else
+	crossd= INT((planck*dabs(vibmodetst(1))*cmhz*gapd*(2600/avo)*1000*(1/kboltz)) / &
+		((2*pi*gapd*(2600/avo)*1000)-(planck*dabs(vibmodetst(1))*cmhz*DLOG(2.d0))))
+	crossi= INT((planck*dabs(vibmodetst(1))*cmhz*gapi*(2600/avo)*1000*(1/kboltz)) / & 
+		((2*pi*gapi*(2600/avo)*1000)-(planck*dabs(vibmodetst(1))*cmhz*DLOG(2.d0))))
+	end if
+	write (8,*) ' CROSSOVER TEMPERATURE IN K' , 'DIRECT', crossd , 'INVERSE' , crossi
+write(8,*) '++++++++++++++++++++++++++++++++++++++++++++++++++++'
 
 do i = Tini, Tfin, 5
+	if (pointer.ne.1) then
+		if (i.LT.crossd) then
+	tunn(i)=dexp(-(2*pi*gapd*(2600/avo)*1000)/(planck*dabs(vibmodetst(1))*cmhz))&
+	*(1+((2*pi*kboltz*i)/(planck*dabs(vibmodetst(1))*cmhz)))*dexp((gapd*2600)/(R*i))
+	write(8,*) 'Temperature' , i , "TUNNELING FACTOR DIRECT" , tunn(i)
+		else
+	tunn(i) = 1.d0
+	write(8,*) 'Temperature' , i , "TUNNELING FACTOR DIRECT" , tunn(i)
+		end if
+	else
+		if (i.LT.crossi) then
 	tunn(i)=dexp(-(2*pi*gapd*(2600/avo)*1000)/(planck*dabs(vibmodetst(1))*cmhz))&
 	*(1+((2*pi*kboltz*i)/(planck*dabs(vibmodetst(1))*cmhz)))*dexp((gapd*2600)/(R*i))
 	tunni(i)=dexp(-(2*pi*gapi*(2600/avo)*1000)/(planck*dabs(vibmodetst(1))*cmhz))&
 	*(1+((2*pi*kboltz*i)/(planck*dabs(vibmodetst(1))*cmhz)))*dexp((gapi*2600)/(R*i))
 	write(8,*) 'Temperature' , i , "TUNNELING FACTOR DIRECT" , tunn(i) , "TUNNELING FACTOR INVERT" , tunni(i)
+		else
+	tunni(i)= 1.d0
+	tunn(i) =1.d0
+	write(8,*) 'Temperature' , i , "TUNNELING FACTOR DIRECT" , tunn(i) , "TUNNELING FACTOR INVERT" , tunni(i)
+		end if
+	end if
 end do
 
 write(8,*) '++++++++++++++CORRECTED RATE CONSTANT++++++++++++++++++'
 do i= Tini, Tfin , 5
+	if (pointer.ne.1) then
+	ktotd(i)=ktst(i)*tunn(i)
+	write(8,*)  'Temperature' , i , 'RATE CONSTANT DIRECT',  ktotd(i)
+	else
 	ktotd(i)=ktst(i)*tunn(i)
 	ktoti(i)=ktsti(i)*tunni(i)
 	write(8,*)  'Temperature' , i , 'RATE CONSTANT DIRECT',  ktotd(i), "RATE CONSTANT INVERSE" , ktoti(i)
+	end if
+	
 end do
 
 do i= Tini, Tfin , 5
@@ -169,7 +214,4 @@ do i= Tini, Tfin , 5
 end do
 
 end
-	
-	 
-
 

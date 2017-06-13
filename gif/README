@@ -1,4 +1,6 @@
-The script is divided into two parts, the 'main' and the 'modifier'.
+The script is divided into two parts, the 'main' and the 'modifier',
+both must be in the same directory when running, and main can be 
+remotely called from the directory where your .pov files are located.
 
 The main calls the functions defined in the modifier script and 
 leads the user during the run.
@@ -7,4 +9,7 @@ You may want to modify some lines in the main file. The modifier file
 has some lines which must be modified, for example the line where 
 the function 'replacer' calls the lines that must be modified when 
 using .pov file generated with MOLDRAW (replace the path to that file,
-linesToModPOVRAY.dat.
+linesToModPOVRAY.dat, this file contains the changes that must be performed
+to all .pov ray files (are definitions of colors, sizes...) and 
+in case that more atoms are added, it must be modified as well to 
+include them, originally only H, C and O are included).

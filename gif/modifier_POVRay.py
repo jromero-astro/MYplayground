@@ -311,7 +311,7 @@ def ImagePOVRay(path,files,INI_flag,Ndig):
     #raw_input('>> POVRay is about to start. Type ENTER to continue: ')
     for k, file in enumerate(files):
         name = file.split('.')[0]
-        num = int(name.split('_')[1])
+        num = int(name.split('_')[-1])
         if ' ' in name: name.replace (" ", "_") # povray doesn't understand whitespaces for output
         file = path+'/'+file
         #............................

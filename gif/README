@@ -1,0 +1,10 @@
+The script is divided into two parts, the 'main' and the 'modifier'.
+
+The main calls the functions defined in the modifier script and 
+leads the user during the run.
+
+You may want to modify some lines in the main file. The modifier file
+has some lines which must be modified, for example the line where 
+the function 'replacer' calls the lines that must be modified when 
+using .pov file generated with MOLDRAW (replace the path to that file,
+linesToModPOVRAY.dat.

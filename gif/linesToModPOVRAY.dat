@@ -1,0 +1,35 @@
+phong .9}
+global_settings {assumed_gamma 2.0}
+#declare Color_Animate = rgb<0.65, 0.65, 0.65, 1.2>;
+#declare Color_Stick = rgb<0.75, 0.75, 0.75>;
+#declare Color_Light = rgb<1.0,1.0,1.0>;
+#declare Color_Light2 = rgb<0.2,0.2,0.2>;
+#declare Color_Background = rgb<1.0,1.0,1.0>;
+#declare Color_Hbond = rgb<0.6, 0.6, 0.6>;
+#declare Color_Cell = rgb<0.8, 0.8, 0.0>;
+#declare Color_Arrows = rgb<1.0, 1.0, 0.0>;
+#declare Scale_Atom_Size = 1;
+#declare Scale_Hydrogen_Size = 1;
+#declare Color_H = rgb<0.75, 0.75, 0.75>; 
+#declare Color_C = rgb<0.50, 0.50, 0.00>; 
+#declare Color_O = rgb<1.00, 0.00, 0.00>; 
+#declare Radius_H = 0.171;
+#declare Radius_H = Radius_H * Scale_Hydrogen_Size;
+#declare Radius_C = 0.347;
+#declare Radius_C = Radius_C * Scale_Atom_Size;
+#declare Radius_O = 0.329;
+#declare Radius_O = Radius_O * Scale_Atom_Size;
+#declare Size_Cell = .01;
+#declare Size_Cylinder_Arrows = .06;
+#declare Size_BaseCone_Arrows = .15;
+#declare Scale_Vibra = .9;
+#declare Size_Stick =  .1;
+#declare Size_Hbond =  .03;
+#declare Cast_Shadow=0;
+#declare Zoom=1;
+#if (Cast_Shadow)
+    #macro ombra()   #end
+#else
+    #macro ombra() no_shadow  #end
+#end
+camera{

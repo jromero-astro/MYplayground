@@ -13,3 +13,14 @@ linesToModPOVRAY.dat, this file contains the changes that must be performed
 to all .pov ray files (are definitions of colors, sizes...) and 
 in case that more atoms are added, it must be modified as well to 
 include them, originally only H, C and O are included).
+
+In case you want to modify the resolution (size) of the .png and subsequently 
+of the .gif you will have to modify it from the modifier file, in the function 
+that generates the .INI for povRAY (INIFile_creator). To do so, change 
++W1600 +H1200 to the values you want. Bear in mind that the higher the resolution, 
+the slower the process.
+
+You can modify as well the line concerning th gif generation, in the 
+function videoGeneratorHQ. In that function you will find that a video 
+can be generated, but I omitted it since gifs are more suitable for presentations.
+
